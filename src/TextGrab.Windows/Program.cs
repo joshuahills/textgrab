@@ -14,6 +14,8 @@ internal static class Program
         if (!isFirst) return 0;
 
         ApplicationConfiguration.Initialize();
+        // WinForms only installs its context once a control exists; we need it before that for marshalling.
+        SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
         TextGrabSettings settings;
         try
