@@ -74,7 +74,7 @@ dotnet test
 dotnet publish src/TextGrab.Windows -c Release
 ```
 
-Publish produces a single self-contained `TextGrab.exe` under
+Publish produces a single-file `TextGrab.exe` (needs the .NET 10 Desktop Runtime) under
 `src/TextGrab.Windows/bin/Release/net10.0-windows10.0.19041.0/win-x64/publish/`.
 Tick "Start with Windows" in the tray menu to run it at login.
 
