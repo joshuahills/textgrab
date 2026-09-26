@@ -4,4 +4,7 @@
     <Project Path="src/TextGrab.Ocr.Windows/TextGrab.Ocr.Windows.csproj" />
     <Project Path="src/TextGrab.Windows/TextGrab.Windows.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TextGrab.Tests/TextGrab.Tests.csproj" />
+  </Folder>
 </Solution>
