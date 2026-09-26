@@ -1,0 +1,81 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Derive version from tag
+        id: ver
+        shell: pwsh
+        run: |
+          $v = "${{ github.ref_name }}".TrimStart("v")
+          "version=$v" >> $env:GITHUB_OUTPUT
+
+      - name: Test
+        run: dotnet test -c Release -p:Version=${{ steps.ver.outputs.version }}
+
+      - name: Publish (self-contained, for installer)
+        run: >
+          dotnet publish src/TextGrab.Windows -c Release
+          -p:Version=${{ steps.ver.outputs.version }}
+          -p:SelfContained=true -p:PublishSingleFile=false
+          -o artifacts/installer-payload
+
+      - name: Publish (framework-dependent, portable)
+        run: >
+          dotnet publish src/TextGrab.Windows -c Release
+          -p:Version=${{ steps.ver.outputs.version }}
+          -o artifacts/portable
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" `
+            /DAppVersion=${{ steps.ver.outputs.version }} `
+            /DPublishDir=..\artifacts\installer-payload `
+            installer\TextGrab.iss
+
+      - name: Zip portable
+        shell: pwsh
+        run: |
+          $v = "${{ steps.ver.outputs.version }}"
+          Compress-Archive -Path artifacts/portable/TextGrab.exe -DestinationPath "artifacts/TextGrab-$v-portable-win-x64.zip"
+
+      - name: Checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem artifacts -File | Where-Object { $_.Extension -in ".exe",".zip" } |
+            ForEach-Object { "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)" } |
+            Set-Content artifacts/SHA256SUMS.txt
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: TextGrab ${{ steps.ver.outputs.version }}
+          generate_release_notes: true
+          files: |
+            artifacts/TextGrab-Setup-*.exe
+            artifacts/TextGrab-*-portable-win-x64.zip
+            artifacts/SHA256SUMS.txt
+          body: |
+            ## Downloads
+
+            | File | Use it when |
+            |------|-------------|
+            | `TextGrab-Setup-${{ steps.ver.outputs.version }}.exe` | **Recommended.** Installs per-user, no admin rights, includes the .NET runtime, optional start at sign-in. |
+            | `TextGrab-${{ steps.ver.outputs.version }}-portable-win-x64.zip` | Single exe, no install. Requires the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0). |
+
+            Windows may show a SmartScreen warning because the binaries are not code-signed. Choose "More info" then "Run anyway".

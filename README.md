@@ -5,6 +5,17 @@ locked PDF, a remote desktop, an error dialog), and the text inside it lands on 
 
 Default hotkey: **Ctrl+Shift+X**. Right-click or Esc cancels.
 
+## Install
+
+Grab the latest from [Releases](https://github.com/joshuahills/textgrab/releases):
+
+- **TextGrab-Setup-x.y.z.exe** (recommended): per-user install, no admin rights, bundles the .NET
+  runtime, optional "start when I sign in". Upgrades in place.
+- **TextGrab-x.y.z-portable-win-x64.zip**: a single exe, nothing to install. Needs the
+  [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0).
+
+The binaries are not code-signed, so SmartScreen may warn on first run. Choose "More info", then "Run anyway".
+
 ## Why it feels instant
 
 - The overlay window and the OCR engine are created and warmed up when the app starts, so a
@@ -79,3 +90,20 @@ Publish produces a single-file `TextGrab.exe` (needs the .NET 10 Desktop Runtime
 Tick "Start with Windows" in the tray menu to run it at login.
 
 Requires Windows 10 1809+ with an OCR-capable language pack installed (English is by default).
+
+## Releasing
+
+Push a tag and the `release` workflow builds the installer and portable zip, computes checksums,
+and publishes a GitHub release with generated notes:
+
+```
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+To build the installer locally, install [Inno Setup 6](https://jrsoftware.org/isinfo.php) and run:
+
+```
+dotnet publish src/TextGrab.Windows -c Release -p:SelfContained=true -p:PublishSingleFile=false -o artifacts/installer-payload
+ISCC.exe /DAppVersion=0.2.0 /DPublishDir=..rtifacts\installer-payload installer\TextGrab.iss
+```

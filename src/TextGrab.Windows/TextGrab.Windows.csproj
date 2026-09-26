@@ -5,6 +5,10 @@
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>TextGrab</AssemblyName>
+    <Version>0.1.0</Version>
+    <Authors>Josh Hills</Authors>
+    <Product>TextGrab</Product>
+    <ApplicationIcon>Assets/textgrab.ico</ApplicationIcon>
     <RootNamespace>TextGrab.Windows</RootNamespace>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -16,6 +20,9 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>none</DebugType>
   </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets/textgrab.ico" LogicalName="TextGrab.ico" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../TextGrab.Core/TextGrab.Core.csproj" />
     <ProjectReference Include="../TextGrab.Ocr.Windows/TextGrab.Ocr.Windows.csproj" />
