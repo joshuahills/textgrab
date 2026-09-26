@@ -73,7 +73,12 @@ internal sealed class TrayApplicationContext : ApplicationContext
     private ContextMenuStrip BuildMenu()
     {
         var menu = new ContextMenuStrip();
-        menu.Items.Add($"Grab text\t{_gesture}", null, (_, _) => _ = Grab());
+        var grab = new ToolStripMenuItem("Grab text", null, (_, _) => _ = Grab())
+        {
+            ShortcutKeyDisplayString = _gesture.ToString(),
+            Font = new Font(menu.Font, FontStyle.Bold),
+        };
+        menu.Items.Add(grab);
         menu.Items.Add(new ToolStripSeparator());
 
         var engineItem = new ToolStripMenuItem($"Engine: {_ocr.Name}") { Enabled = false };
