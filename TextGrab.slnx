@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TextGrab.Core/TextGrab.Core.csproj" />
+    <Project Path="src/TextGrab.Ocr.Windows/TextGrab.Ocr.Windows.csproj" />
+    <Project Path="src/TextGrab.Windows/TextGrab.Windows.csproj" />
+  </Folder>
+</Solution>
